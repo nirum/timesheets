@@ -3,8 +3,6 @@ Timesheets
 
 Benjamin Naecker
 ----------------
-09 Apr 2013
-----
 
 This is a set of simple shell scripts to log your work hours.
 You'll need to update the scripts to work with your filesystem however you
