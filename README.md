@@ -10,7 +10,7 @@ Usage
 -----
 ```bash
 tman \<command\> [options]
-'''
+```
 
 Commands
 --------
