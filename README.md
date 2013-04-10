@@ -1,38 +1,42 @@
-Timesheets
+tman
 ==========
 
 Benjamin Naecker
 ----------------
 
-This is a set of simple shell scripts to log your work hours.
-You'll need to update the scripts to work with your filesystem however you
-see fit.
+tman is a simple shell script to help you keep track of your work hours.
 
-newday.sh
----------
-
-This script makes a new text file for the current work day, and starts the 
-clock for the first time.
-
-in.sh
+Usage
 -----
+```bash
+tman <command> [options]
+```
 
-This starts the timer.
-
-out.sh
-------
-
-This stops the timer
-
-endday.sh
+Commands
 --------
 
-At the end of the workday, this stops the timer for the final time, and
-then computes the total hours you worked that day. This is saved in a text
-file.
+setup		- simple setup. creates tman directory and adds an alias to your bashrc
+
+new			- make a timesheet for today
+
+in [notes]	- start the timer, possibly with notes
+
+out [notes] - stop the timer, possibly with notes
+
+end			- stop the timer for the day, summarize your work hours
+
+Options
+-------
+right now, just notes!
 
 TODO
 ====
 
-+ update in and out scripts to put in an optional string with whatever you're
++ [x] update in and out scripts to put in an optional string with whatever you're
 working on.
++ [x] write using printf to format the timesheet and summary files
++ [ ] check that summary does not already exist before trying to add it to the summary file
++ [ ] move scripts to tman dir at the end of setup
++ [ ] more options? deal with forgetting to logout/summarize, add notes after the fact, etc.
++ [ ] backup? what happens if i delete/overwrite the summary file? maybe have daily backups?
++ [ ] extend note length limitation from current 32 characters!
