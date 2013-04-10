@@ -8,16 +8,18 @@ tman is a simple shell script to help you keep track of your work hours.
 
 Usage
 -----
-tman <command> [options]
+```bash
+tman \<command\> [options]
+'''
 
 Commands
 --------
 
-setup		- simple setup. creates tman directory and adds an alias to your bashrc
-new			- make a timesheet for today
-in [notes]	- start the timer, possibly with notes
-out [notes] - stop the timer, possibly with notes
-end			- stop the timer for the day, summarize your work hours
+setup		- simple setup. creates tman directory and adds an alias to your bashrc\n
+new			- make a timesheet for today\n
+in [notes]	- start the timer, possibly with notes\n
+out [notes] - stop the timer, possibly with notes\n
+end			- stop the timer for the day, summarize your work hours\n
 
 TODO
 ====
