@@ -5,11 +5,13 @@
 # tman is a shell script that provides a simple way to log your work day.
 # 
 # INPUT:
-# 	setup		- sets up tman.conf and the directory structure
-# 	new			- create new timesheet for today
-#	in [notes] 	- clock in, or start the timer, possibly with notes
-# 	out [notes]	- clock out, or stop the timer, possibly with notes
-# 	end [notes] - end the work day, logging the hours worked
+# 	setup					- sets up tman.conf and the directory structure
+# 	new						- create new timesheet for today
+#	in [notes] 				- clock in, or start the timer, possibly with notes
+# 	out [notes]				- clock out, or stop the timer, possibly with notes
+# 	end [notes] 			- end the work day, logging the hours worked
+# 	show [ summary | date ] - show either the summary file or the timesheet for 
+# 							  the requested date
 #
 # OUTPUT:
 # 	tman works with exclusively with text files, which are within the 
@@ -20,8 +22,9 @@
 # version history:
 #	0.0.1	- 	09 Apr 2013
 #	0.1.0	- 	10 Apr 2013
+# 	0.1.1 	- 	10 Apr 2013
 
-VERSTRING="tman version 0.1.0\n(c) benjamin.naecker@gmail.com 2013"
+VERSTRING="tman version 0.1.1\n(c) benjamin.naecker@gmail.com 2013"
 
 ## input parsing
 ## --help or no input
@@ -38,6 +41,7 @@ then
 	echo -e "  in   \t\t clock in, optional notes attached"
 	echo -e "  out  \t\t clock out, optional notes attached"
 	echo -e "  end  \t\t end the day, sum up hours worked"
+	echo -e "  show \t\t show either the summary or the timesheet for the requeste date"
 	exit 1
 fi
 
@@ -48,7 +52,7 @@ then
 	echo -e $VERSTRING
 fi
 
-## standard commands
+## commands
 case $1 in 
 	"setup" ) 
 		# check if TMANDIR is a shell variable
@@ -267,5 +271,37 @@ case $1 in
 
 		# remove temporary diff file
 		rm $TMPFILE
+		;;
+	"show" )
+		# get current day
+		DAY=$(date +"%d%b%Y")
+
+		# check second argument
+		if  ( [ $# -le 1 ] ||  [ $2 = "summary" ] )
+		then
+			# check the summary file exists
+			SUMFILE=$TMANDIR/summary.txt
+			if [ -f $SUMFILE ]
+			then
+				# print out summary file
+				echo "summary of your work hours"
+				echo ""
+				cat $TMANDIR/summary.txt
+				echo ""
+			else
+				echo "summary file does not exist yet."
+				echo ""
+			fi
+		else
+			# print out the timesheet for the requested day
+			if [ -f $TMANDIR/timesheets/$2.txt ]
+			then
+				echo "timesheet for $2"
+				cat $TMANDIR/timesheets/$2.txt
+				echo ""
+			else
+				echo "timesheet for $2 does not exist"
+			fi
+		fi
 		;;
 esac
