@@ -19,8 +19,9 @@
 #
 # version history:
 #	0.0.1	- 	09 Apr 2013
+#	0.1.0	- 	10 Apr 2013
 
-VERSTRING="tman version 0.0.1\n(c) benjamin.naecker@gmail.com 2013"
+VERSTRING="tman version 0.1.0\n(c) benjamin.naecker@gmail.com 2013"
 
 ## input parsing
 ## --help or no input
