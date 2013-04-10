@@ -108,9 +108,8 @@ case $1 in
 
 			fi
 
-			# add the timesheets and summary directories
+			# add the timesheets directory
 			mkdir "$TMANDIR/timesheets"
-			mkdir "$TMANDIR/summary"
 
 			# notify we're done
 			echo "tman is all set up, you're ready to roll"
@@ -138,15 +137,13 @@ case $1 in
 		touch $DAYFILE
 
 		# put up the headers
-		#echo -e "--- IN ---\t--- NOTES ---\t\t--- OUT ---\t--- NOTES ---" >> $DAYFILE
-		printf "%-16s" "-- IN --" >> $DAYFILE
-		printf "%-32s" "-- NOTES --" >> $DAYFILE
-		printf "%-16s" "-- OUT --" >> $DAYFILE
-		printf "%-32s\n" "-- NOTES --" >> $DAYFILE
+		printf "%-16s" "--- IN ---" >> $DAYFILE
+		printf "%-32s" "--- NOTES ---" >> $DAYFILE
+		printf "%-16s" "--- OUT ---" >> $DAYFILE
+		printf "%-32s\n" "--- NOTES ---" >> $DAYFILE
 
 		# start the timer
 		echo "clocking in at $(date +"%H:%M")"
-		#echo -en "$(date +"%s")\t" >> $DAYFILE
 		printf "%-16s" "$(date +"%s")" >> $DAYFILE
 
 		# check if there are any clockin notes
@@ -158,7 +155,6 @@ case $1 in
 		fi
 
 		# cat the notes
-		#echo -en "$NOTES\t" >> $DAYFILE
 		printf "%-32s" "$NOTES" >> $DAYFILE
 		;;
 	"in" )
@@ -177,7 +173,7 @@ case $1 in
 
 		# start the timer
 		echo "clocking in at $(date +"%H:%M")"
-		echo -en "$(date +"%s")\t" >> $DAYFILE	
+		printf "%-16s" "$(date +"%s")" >> $DAYFILE
 
 		# check if there are any clockin notes
 		if [ $# -le 1 ]
@@ -188,7 +184,7 @@ case $1 in
 		fi
 
 		# cat the notes
-		echo -en "$NOTES\t" >> $DAYFILE
+		printf "%-32s" "$NOTES" >> $DAYFILE
 		;;
 	"out" )
 		# get current day
@@ -206,7 +202,7 @@ case $1 in
 
 		# stop the timer
 		echo "clocking out at $(date +"%H:%M")"
-		echo -en "$(date +"%s")\t" >> $DAYFILE
+		printf "%-16s" "$(date +"%s")" >> $DAYFILE
 
 		# check if there are any clockout notes
 		if [ $# -le 1 ]
@@ -217,9 +213,58 @@ case $1 in
 		fi
 
 		# cat the notes, this time printing a new line
-		echo -e "$NOTES\t" >> $DAYFILE
+		printf "%-32s\n" "$NOTES" >> $DAYFILE
 		;;
 	"end" )
+		# get current day
+		DAY=$(date +"%d%b%Y")
 
+		# filename for this day's timesheet
+		DAYFILE=$TMANDIR/timesheets/$DAY.txt
+
+		# check if it exists
+		if ! [ -f $DAYFILE ]
+		then
+			echo "timesheet for $(date +"%d %b %Y") does not exist"
+			exit 1
+		fi
+
+		# check if a summary file exists
+		SUMFILE=$TMANDIR/summary.txt
+		if ! [ -f $SUMFILE ] 
+		then
+			touch $SUMFILE
+			printf "%-16s" "--- DATE ---" >> $SUMFILE
+			printf "%-24s\n" "--- HOURS ---" >> $SUMFILE
+		fi
+		# NEED TO CHECK IF DATE IS ALREADY THERE!
+		# put the date in the sumfile
+		#echo -en "$(date +"%d %b %Y"):\t" >> $SUMFILE
+		printf "%-16s" "$(date +"%d %b %Y"):" >> $SUMFILE
+
+		# stop the timer
+		echo "clocking out at $(date +"%H:%M")"
+		printf "%-16s" "$(date +"%s")" >> $DAYFILE
+
+		# check if there are any clockout notes
+		if [ $# -le 1 ]
+		then
+			NOTES="none"
+		else
+			NOTES=$2
+		fi
+
+		# cat the notes, this time printing a new line
+		printf "%-32s\n" "$NOTES" >> $DAYFILE
+
+		# count up the hours worked and print to the summary file
+		TMPFILE=$TMANDIR/timesheets/$DAY.temp
+		awk '$1 ~ /[0-9]/ {print ($3 - $1)}' $DAYFILE >> $TMPFILE
+		awk '{s+=$1} END {print (s / 3600)}' $TMPFILE >> $SUMFILE
+		
+		# NEED TO PRINT TODAY'S HOURS TO COMMAND LINE
+
+		# remove temporary diff file
+		rm $TMPFILE
 		;;
 esac
