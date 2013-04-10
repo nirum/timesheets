@@ -12,7 +12,7 @@ dt=$(date +"%d%b%y")
 echo "making timesheet for $(date +"%d %b %Y")" 
 
 # make the file
-touch ~/FileCabinet/Code/innout/timesheets/$dt.txt
+touch ~/Dropbox/logs/timesheets/$dt.txt
 
 # start the timer
-~/FileCabinet/Code/innout/in.sh
+in.sh
