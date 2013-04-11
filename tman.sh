@@ -292,6 +292,15 @@ case $1 in
 				echo "summary file does not exist yet."
 				echo ""
 			fi
+		elif [ $2 = "today" ]
+		then
+			# print out today's timesheet
+			if [ -f $TMANDIR/timesheets/$DAY.txt ]
+			then
+				echo "timesheet for $(date +"%d %b %Y")"
+				cat $TMANDIR/timesheets/$DAY.txt
+				echo ""
+			fi
 		else
 			# print out the timesheet for the requested day
 			if [ -f $TMANDIR/timesheets/$2.txt ]
