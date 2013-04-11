@@ -25,6 +25,8 @@ out [notes] - stop the timer, possibly with notes
 
 end			- stop the timer for the day, summarize your work hours
 
+show		- print the current day's timesheet
+
 Options
 -------
 right now, just notes!
