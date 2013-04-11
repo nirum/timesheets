@@ -3,7 +3,7 @@
 # tman.sh
 #
 # tman is a shell script that provides a simple way to log your work day.
-# 
+#
 # INPUT:
 # 	setup		- sets up tman.conf and the directory structure
 # 	new			- create new timesheet for today
@@ -12,7 +12,7 @@
 # 	end [notes] - end the work day, logging the hours worked
 #
 # OUTPUT:
-# 	tman works with exclusively with text files, which are within the 
+# 	tman works with exclusively with text files, which are within the
 # 	directory tmandir, defined in tman.conf
 #
 # (c) benjamin.naecker@gmail.com 2013
@@ -49,8 +49,8 @@ then
 fi
 
 ## standard commands
-case $1 in 
-	"setup" ) 
+case $1 in
+	"setup" )
 		# check if TMANDIR is a shell variable
 		if [ -z "$TMANDIR" ]
 		then
@@ -81,7 +81,7 @@ case $1 in
 
 			# export the TMANDIR
 			echo "export TMANDIR=$TMANDIR" >> $TMANCONF
-	
+
 			## check if the user wants to make aliases
 			read -e -p "would you like to add an alias for tman? [y]: " ADDALIAS
 			if [ -z "$ADDALIAS" ]
@@ -114,7 +114,7 @@ case $1 in
 
 			# notify we're done
 			echo "tman is all set up, you're ready to roll"
-		
+
 		else
 			echo "tman is already set up"
 		fi;;
@@ -124,7 +124,7 @@ case $1 in
 
 		# file name for this day's time sheet
 		DAYFILE=$TMANDIR/timesheets/$DAY.txt
-		
+
 		# check if it exists
 		if [ -f $DAYFILE ]
 		then
@@ -164,7 +164,7 @@ case $1 in
 
 		# file name for this day's time sheet
 		DAYFILE=$TMANDIR/timesheets/$DAY.txt
-		
+
 		# check if it exists
 		if ! [ -f $DAYFILE ]
 		then
@@ -232,7 +232,7 @@ case $1 in
 
 		# check if a summary file exists
 		SUMFILE=$TMANDIR/summary.txt
-		if ! [ -f $SUMFILE ] 
+		if ! [ -f $SUMFILE ]
 		then
 			touch $SUMFILE
 			printf "%-16s" "--- DATE ---" >> $SUMFILE
@@ -262,10 +262,27 @@ case $1 in
 		TMPFILE=$TMANDIR/timesheets/$DAY.temp
 		awk '$1 ~ /[0-9]/ {print ($3 - $1)}' $DAYFILE >> $TMPFILE
 		awk '{s+=$1} END {print (s / 3600)}' $TMPFILE >> $SUMFILE
-		
+
 		# NEED TO PRINT TODAY'S HOURS TO COMMAND LINE
 
 		# remove temporary diff file
 		rm $TMPFILE
 		;;
+    "show" )
+        # get current day
+        DAY=$(date +"%d%b%Y")
+
+		# filename for this day's timesheet
+		DAYFILE=$TMANDIR/timesheets/$DAY.txt
+
+		# check if it exists
+		if ! [ -f $DAYFILE ]
+		then
+			echo "timesheet for $(date +"%d %b %Y") does not exist"
+			exit 1
+		fi
+
+        # display
+        cat $DAYFILE
+        ;;
 esac
