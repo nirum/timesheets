@@ -1,5 +1,4 @@
-*timesheets*
-*hours*
-tman.conf
-summary.txt
+__pycache__
+*.pyc
 *.swp
+tman.conf
