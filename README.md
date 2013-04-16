@@ -5,4 +5,6 @@ Simple time management stuff.
 
 todo
 -----
-+ [ ] write it!
++ [ ] nail down basic structure of project JSON structures
++ [ ] write commands to create new project file
++ [ ] everything else!
