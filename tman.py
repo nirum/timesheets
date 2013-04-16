@@ -11,7 +11,7 @@ simple time management scripts
 '''
 
 ## core python imports
-import argparse, json, sys
+import argparse, json, sys, os
 from dateutil.parser import time
 
 ## tman imports
@@ -20,8 +20,7 @@ from core import *
 
 ## read tman.conf file
 try:
-	#tmanConfFid = open('~/.tman/tman.conf', 'r')
-	tmanConfFid = open('/Users/bnaecker/FileCabinet/Code/tman/tman.conf', 'r')
+	tmanConfFid = open(os.path.expanduser('~/.tman/tman.conf'), 'r')
 	tman = json.load(tmanConfFid)
 except:
 	print('tman not setup, run "python3 setup.py install"')
