@@ -1,17 +1,12 @@
 #!/usr/local/bin/python3
 """
-simple time management scripts
-"""
-
-## VERSION INFO
-verString = '''
 tman v0.0.1
 simple time management scripts
 (c) 2013 benjamin.naecker@gmail.com
-'''
+"""
 
 ## core python imports
-import argparse, json, sys, os
+import argparse, json, os
 from dateutil.parser import time
 
 ## tman imports
@@ -20,47 +15,61 @@ from core import *
 
 ## read tman.conf file
 try:
-	tmanConfFid = open(os.path.expanduser('~/.tman/tman.conf'), 'r')
-	tman = json.load(tmanConfFid)
+	fid = open(os.path.expanduser('~/.tman/tman.conf'))
+	prefs = getTmanPrefs(fid)
 except:
-	print('tman not setup, run "python3 setup.py install"')
-	sys.exit()
+	print('tman not setup, you gotta do some stuff first')
+	os.sys.exit()
+
+## get the input arguments
+nArgs = len(os.sys.argv) - 1
+if nArgs == 0:
+	args = None
+else:
+	args = os.sys.argv[1:]
 
 ## get primary command input
 # get the command, if any
-if len(sys.argv) == 1:
+if nArgs == 0:
 	cmd = None
 else:
-	cmd = sys.argv[1]
+	cmd = args[0]
 
 # print version string
 if cmd == '-v' or cmd == '--version':
-	print(verString)
-	sys.exit()
+	print(__doc__)
+	os.sys.exit()
 
 # print help if no command given, or -h, --help given
 if cmd is None or cmd == '-h' or cmd == '--help' or cmd == 'help':
 	# get possible command for which user needs help
-	if len(sys.argv) <= 2:
+	if nArgs < 2:
+		# print general help if user doesn't specify a command
 		helpCmd = 'general'
 	else:
-		helpCmd = sys.argv[2]
+		# print help for a specific command
+		helpCmd = args[1]
 	
 	# print the usage and quit
 	printUsage(helpCmd)
-	sys.exit()
+	os.sys.exit()
 
 ## make new project file
 if cmd == 'new':
 	# check that project name or tag is given
-	if len(sys.argv) == 2:
+	if nArgs == 1:
 		# if no project given, print usage for new command and exit
 		printUsage('new')
-		sys.exit()
+		os.sys.exit()
 	else:
 		# project given, check that it exists
-		projectName = sys.argv[2]
-		checkProjectExists(projectName)
-		print('project "' + projectName + '" already exists')
-		sys.exit()
+		projectName = args[1]
+		projectExists = checkProjectExists(makeProjectFilename(prefs, projectName))
+		if projectExists:
+			print('project "' + projectName + '" already exists')
+			os.sys.exit()
+
+		# if not, creat a new project!
+		project = createNewProject(prefs, projectName)
+		saveProject(project)
 
