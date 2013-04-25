@@ -22,19 +22,19 @@ def printUsage(helpCmd):
 		printGeneralHelp()
 
 	elif helpCmd == 'new':
-		print('this should be new help')
+		printNewHelp()
 
 	elif helpCmd == 'in':
-		print('this should be in help')
+		printInHelp()
 
 	elif helpCmd == 'out':
-		print('this should be out help')
+		printOutHelp()
 
 	elif helpCmd == 'tag':
 		print('this should be tag help')
 
 	elif helpCmd == 'list':
-		print('this should be list help')
+		printListHelp()
 
 	elif helpCmd == 'show':
 		print('this should be show help')
@@ -47,4 +47,20 @@ def printUsage(helpCmd):
 
 def printNewHelp():
 	"""print detailed help for new command"""
-	print('usage: tman new <project> [options]')
+	print('usage: tman new <project>')
+	print('create a new project with the given name')
+
+def printInHelp():
+	"""print detailed help for in command"""
+	print('usage: tman in <project> [notes]')
+	print('clock in on the requested project, optionally adding notes when you do so')
+
+def printOutHelp():
+	"""print detailed help for out command"""
+	print('usage: tman out <project> [notes]')
+	print('clock out on the requested project, optionally adding notes when you do so')
+
+def printListHelp():
+	"""print help for list command"""
+	print('usage: tman list')
+	print('show all current projects')
