@@ -1,8 +1,8 @@
 def printGeneralHelp():
 	"""print tman usage, commands, and general options"""
-	print('\nusage: tman <command> [options]' + 
-	'\n\n' + 
-	'commands:\n' + 
+	print('\nusage: tman <command> [options]' +
+	'\n\n' +
+	'commands:\n' +
 	'  help\t\t\tshow detailed help about the given command\n'+
 	'  new\t\t\tcreate new timesheet for a project\n'+
 	'  in\t\t\tclock in on a project\n'+
@@ -12,7 +12,7 @@ def printGeneralHelp():
 	'  show\t\t\tshow info about a project or the summary file\n'+
 	'  search\t\tsearch project files\n'+
 	'\n' +
-	'general options:\n' + 
+	'general:\n' +
 	'  -h, --help\t\tshow this help and exit\n' +
 	'  -v, --version\t\tprint version information\n')
 
@@ -41,8 +41,8 @@ def printUsage(helpCmd):
 
 	elif helpCmd == 'search':
 		print('this should be search help')
-		
-	else: 
+
+	else:
 		printGeneralHelp()
 
 def printNewHelp():
