@@ -12,13 +12,6 @@ import argparse, json, os, time
 from help import *
 from core import *
 
-## read tman.conf file
-try:
-	prefs = getTmanPrefs(os.path.expanduser('~/.tman/tman.conf'))
-except:
-	print('tman not setup, you gotta do some stuff first')
-	os.sys.exit()
-
 ## get the input arguments
 nArgs = len(os.sys.argv) - 1
 if nArgs == 0:
@@ -47,9 +40,17 @@ if cmd is None or cmd == '-h' or cmd == '--help' or cmd == 'help':
 	else:
 		# print help for a specific command
 		helpCmd = args[1]
-	
+
 	# print the usage and quit
 	printUsage(helpCmd)
+	os.sys.exit()
+
+## read tman.conf file
+try:
+	prefs = getTmanPrefs(os.path.expanduser('~/.tman/tman.conf'))
+except:
+    # TODO: more graceful help on setup
+	print('tman not setup, you gotta do some stuff first')
 	os.sys.exit()
 
 ## make new project file
