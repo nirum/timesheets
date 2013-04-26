@@ -16,6 +16,12 @@ def printGeneralHelp():
 	'  -h, --help\t\tshow this help and exit\n' +
 	'  -v, --version\t\tprint version information\n')
 
+def printSetupHelp():
+	"""print help for setting up tman"""
+	print('Welcome to tman, a simple time management system.')
+	print('Nothing is currently setup, but we can change that very quickly')
+	print('Running tmansetup.sh will run you through the simple setup procedure')
+
 def printUsage(helpCmd):
 	"""print tman command-specific usage"""
 	if helpCmd == 'general':

@@ -6,7 +6,7 @@ simple time management scripts
 """
 
 ## core python imports
-import argparse, json, os, time
+import json, os, time
 
 ## tman imports
 from help import *
@@ -45,12 +45,12 @@ if cmd is None or cmd == '-h' or cmd == '--help' or cmd == 'help':
 	printUsage(helpCmd)
 	os.sys.exit()
 
-## read tman.conf file
-try:
-	prefs = getTmanPrefs(os.path.expanduser('~/.tman/tman.conf'))
-except:
-    # TODO: more graceful help on setup
-	print('tman not setup, you gotta do some stuff first')
+## read tmanrc file
+rcfile = os.path.expanduser('~/.tmanrc')
+if os.path.isfile(rcfile):
+	prefs = getTmanPrefs(rcfile)
+else:
+	printSetupHelp()
 	os.sys.exit()
 
 ## make new project file
