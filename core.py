@@ -23,67 +23,90 @@ def makeProjectFilename(prefs, projectName):
 
 def createNewProject(prefs, projectName):
 	"""create a new project with the given name"""
+	# notify
 	print('creating new project "' + projectName + '"')
-	project = {
-			'metadata': {'name': projectName,
-						 'file': makeProjectFilename(prefs, projectName),
-						 'active': False}, 
-			'timestamps': []}
-			#timestamps': [{'in': [], 
-							#'out': [], 
-							#'notes': []}]}
+
+	# create an empty project dict
+	project = {'in': [], 
+			   'out': [],
+			   'notes': []}
+
+	# add the project to the metadata file
+	addProjectToMd(prefs, projectName)
+
 	return project
 
 def makeTimestamp(prefs):
 	"""return a string timestamp according to the user's preferred format"""
 	return time.strftime(prefs['timefmt'])
 
-def clockIn(prefs, project, t, notes):
+def clockIn(prefs, projectName, project, t, notes):
 	"""clock in on a project"""
-	# set the timestamp
-	project['timestamps'].append({'in': t, 
-		'out': 0, 'notes': [notes]})
+	# set the in timestamp
+	project['in'].append(t)
+	# set the out timestamp to zero for now
+	project['out'].append(0)
+	# append the optional notes
+	project['notes'].append(notes)
 
 	# set the project as active
-	setActive(project)
+	setActive(prefs, projectName)
 
-def clockOut(prefs, project, t, notes):
+def clockOut(prefs, projectName, project, t, notes):
 	"""clock out on a project"""
 	# set the timestamp
-	project['timestamps'][-1]['out'] = t
+	project['out'][-1] = t
 
 	# append notes
-	project['timestamps'][-1]['notes'].append(notes)
+	project['notes'].append(notes)
 
 	# set project as inactive
-	setInactive(project)
+	setInactive(prefs)
 
-def isActive(project):
-	"""determine if we've clocked in on the project"""
-	return project['metadata']['active']
+def activeProject(prefs):
+	"""return the currently active project"""
+	# read metadata.json
+	md = readMetadata(prefs)
+
+	# check if project is active
+	return md['active']
+
+
+def setActive(prefs, projectName):
+	"""set a project as active"""
+	# read current metadata
+	md = readMetadata(prefs)
+
+	# list the current project as active
+	md['active'] = projectName
+
+	# write metadata
+	writeMetadata(prefs, md)
+	
+def setInactive(prefs):
+	"""set a project as inactive"""
+	# read current metadata
+	md = readMetadata(prefs)
+
+	# list None as the active project
+	md['active'] = None
+
+	# write metadata
+	writeMetadata(prefs, md)
 	
 
-def setActive(project):
-	"""set a project as active"""
-	project['metadata']['active'] = True
-
-def setInactive(project):
-	"""set a project as inactive"""
-	project['metadata']['active'] = False
-
-def saveProject(project):
+def saveProject(prefs, projectName, project):
 	"""save a project to its file"""
 	# open the file
-	fid = open(getProjectFilename(project), 'w')
+	fid = open(os.path.join(os.path.expanduser(prefs['tmandir']), 'projects', projectName + '.json'), 'w')
 	json.dump(project, fid)
 	fid.close()
 
 def loadProject(prefs, projectName):
 	"""load the JSON project object with the given name"""
-	fname = makeProjectFilename(prefs, projectName)
-	e = checkProjectExists(fname)
+	e = checkProjectExists(prefs, projectName)
 	if e:
-		fid = open(fname, 'r')
+		fid = open(os.path.join(os.path.expanduser(prefs['tmandir']), 'projects', projectName + '.json'), 'r')
 		project = json.load(fid)
 		fid.close()
 	else:
@@ -91,17 +114,37 @@ def loadProject(prefs, projectName):
 
 	return project
 
-def getProjectName(project):
-	"""get the project's name from its metadata"""
-	return project['metadata']['name']
-
-def getProjectFilename(project):
-	"""make the full path to the project JSON file"""
-	return project['metadata']['file']
-
 def getTimestamps(project):
 	return project['timestamps']
 
-def checkProjectExists(fname):
+def checkProjectExists(prefs, projectName):
 	"""check if a project file exists"""
-	return os.path.isfile(fname)
+	# read metadata JSON file
+	md = readMetadata(prefs)
+
+	# return if the project is listed in metadata
+	return projectName in md['projects']
+
+def readMetadata(prefs):
+	"""read the metadata.json file"""
+	fid = open(os.path.join(prefs['tmandir'], 'metadata.json'), 'r')
+	md = json.load(fid)
+	fid.close()
+	return md
+
+def writeMetadata(prefs, md):
+	"""write the metadata.json file"""
+	fid = open(os.path.join(prefs['tmandir'], 'metadata.json'), 'w')
+	json.dump(md, fid)
+	fid.close()
+
+def addProjectToMd(prefs, projectName):
+	"""add the project with the given name to the metadata file"""
+	# read current metadata
+	md = readMetadata(prefs)
+	
+	# add this project to the list
+	md['projects'].append(projectName)
+
+	# save the new metadata
+	writeMetadata(prefs, md)

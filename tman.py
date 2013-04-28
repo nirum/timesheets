@@ -62,13 +62,13 @@ if cmd == 'new':
 	else:
 		# project given, check that it exists
 		projectName = args[1]
-		if checkProjectExists(makeProjectFilename(prefs, projectName)):
+		if checkProjectExists(prefs, projectName):
 			print('project "' + projectName + '" already exists')
 
 		else:
 			# if not, create a new project!
 			project = createNewProject(prefs, projectName)
-			saveProject(project)
+			saveProject(prefs, projectName, project)
 
 	# exit
 	os.sys.exit()
@@ -83,12 +83,15 @@ if cmd == 'in':
 	else:
 		# project given, check that it exists
 		projectName = args[1]
-		if checkProjectExists(makeProjectFilename(prefs, projectName)):
+		if checkProjectExists(prefs, projectName):
 			# load the project
 			project = loadProject(prefs, projectName)
 
-			# check that the project is active now
-			if not isActive(project):
+			# get the currently active project, if any
+			currentProject = activeProject(prefs)
+			
+			# clock in, if not already on another project
+			if currentProject is None:
 
 				# get the current time in the preferred format
 				t = makeTimestamp(prefs)
@@ -104,12 +107,12 @@ if cmd == 'in':
 
 				# clock in!
 				print('clocking in on project "' + projectName + '" at ' + t)
-				clockIn(prefs, project, t, notes)
+				clockIn(prefs, projectName, project, t, notes)
 
 				# save project
-				saveProject(project)
+				saveProject(prefs, projectName, project)
 			else:
-				print('you are already clocked in on project "' + projectName + '"')
+				print('you are already clocked in on project "' + currentProject + '"')
 				os.sys.exit()
 		else:
 			print('project "' + projectName + '" does not exist')
@@ -124,12 +127,13 @@ if cmd == 'out':
 	else:
 		# project given, check that it exists
 		projectName = args[1]
-		if checkProjectExists(makeProjectFilename(prefs, projectName)):
+		if checkProjectExists(prefs, projectName):
 			# load the project
 			project = loadProject(prefs, projectName)
 
 			# check that the project is active now
-			if isActive(project):
+			currentProject = activeProject(prefs)
+			if currentProject == projectName:
 
 				# get the current time in the preferred format
 				t = makeTimestamp(prefs)
@@ -145,10 +149,10 @@ if cmd == 'out':
 
 				# clock out!
 				print('clocking out on project "' + projectName + '"at ' + t)
-				clockOut(prefs, project, t, notes)
+				clockOut(prefs, projectName, project, t, notes)
 
 				# save project
-				saveProject(project)
+				saveProject(prefs, projectName, project)
 
 			else:
 				print('you are not currently clocked in on project "' + projectName +'"')
@@ -159,7 +163,7 @@ if cmd == 'out':
 
 ## list all projects
 if cmd == 'list':
-	projects = [f.rstrip('.json') for f in os.listdir(os.path.join(os.path.expanduser(prefs['tmandir']), 'projects'))]
+	projects = [f.replace('.json', '') for f in os.listdir(os.path.join(os.path.expanduser(prefs['tmandir']), 'projects'))]
 	print('your projects are:')
 	for pr in projects:
 		print(pr)
