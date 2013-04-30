@@ -47,9 +47,12 @@ echo "[Core]" >> $HOME/.tmanrc
 echo "tmandir = $TMANDIR" >> $HOME/.tmanrc
 echo "timefmt = $TIMEFMT" >> $HOME/.tmanrc
 
+## make metadata.json file
+echo '{"active": null, "projects": []}' > $TMANDIR/metadata.json
+
 ## put something in /usr/local/bin?
 echo ""
-read -p "Would you link to symlink tman to /usr/local/bin? [y]/n: " DOLINK
+read -p "Would you link to symlink tman to /usr/local/bin? ([y]/n): " DOLINK
 if [ -z $DOLINK ]; then
 	DOLINK='y'
 fi
