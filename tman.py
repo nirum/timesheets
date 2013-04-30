@@ -1,16 +1,22 @@
 #!/usr/local/bin/python3
 """
-tman v0.0.2
+tman v0.1.0
 simple time management scripts
 (c) 2013 benjamin.naecker@gmail.com
 """
 
 ## core python imports
-import json, os, time
+import json, os
 
 ## tman imports
 from help import *
 from core import *
+#from search import *
+
+## some pretty printing constants
+bold = '\033[1m'
+under = '\033[4m'
+norm = '\033[0m'
 
 ## get the input arguments
 nArgs = len(os.sys.argv) - 1
@@ -62,11 +68,12 @@ if cmd == 'new':
 	else:
 		# project given, check that it exists
 		projectName = args[1]
-		if checkProjectExists(prefs, projectName):
-			print('project "' + projectName + '" already exists')
+		if matchProjectName(prefs, projectName):
+			print('project {b}{p}{n} already exists'.format(b=bold, p=projectName, n=norm))
 
 		else:
 			# if not, create a new project!
+			print('creating new project {b}{p}{n}'.format(b=bold, p=projectName, n=norm))
 			project = createNewProject(prefs, projectName)
 			saveProject(prefs, projectName, project)
 
@@ -76,95 +83,250 @@ if cmd == 'new':
 ## check in on the requested project
 if cmd == 'in':
 	# check that project name is given
-	if nArgs is 1:
+	if nArgs == 1:
 		# no project was given
-		print(nArgs)
 		printUsage('in')
 	else:
 		# project given, check that it exists
-		projectName = args[1]
-		if checkProjectExists(prefs, projectName):
+		inputName = args[1]
+
+		# match projectName to input
+		projectName = matchProjectName(prefs, inputName)
+
+		if projectName is not None:
 			# load the project
 			project = loadProject(prefs, projectName)
+
+			# parse the remaining argument list
+			rtime, rtag, notes, notice = parseOptArgs(args[2:], project, projectName, prefs)
 
 			# get the currently active project, if any
 			currentProject = activeProject(prefs)
 			
-			# clock in, if not already on another project
-			if currentProject is None:
+			# clock in, if not already on another project, or if specific tag requested
+			if currentProject is None or rtag is not None:
 
 				# get the current time in the preferred format
-				t = makeTimestamp(prefs)
+				otime = makeTimestamp(prefs)
 
-				# check notes is a string
-				if nArgs is 3:
-					notes = args[2]
-				else:
-					notes = ''
-				if type(notes) is not str:
-					printUsage('in')
+				# update project timestamp
+				t = adjustTime(otime, rtime, prefs)
+
+				# check that a user-requested tag belongs to the requested project
+				if rtag is not None and rtag not in project.keys():
+					print('requested tag {b}{tg}{n} is not valid for project {b}{p}{n}'.format(b=bold, 
+						tg=rtag, n=norm, p=projectName))
 					os.sys.exit()
 
+				# make correct tag
+				tag = makeEventTag(t, rtag, prefs, clockout=False)
+
 				# clock in!
-				print('clocking in on project "' + projectName + '" at ' + t)
-				clockIn(prefs, projectName, project, t, notes)
+				print('clocking in on project {b}{p}{n} at {a}{f}'.format(b=bold, p=projectName, n=norm, a=notice, f=t))
+				clockIn(prefs, projectName, project, t, tag, notes)
 
 				# save project
 				saveProject(prefs, projectName, project)
 			else:
-				print('you are already clocked in on project "' + currentProject + '"')
+				print('you are already clocked in on project {b}{p}{n}'.format(b=bold, p=currentProject[0], n=norm))
 				os.sys.exit()
 		else:
-			print('project "' + projectName + '" does not exist')
+			print('project {b}{p}{n} does not exist'.format(b=bold, p=inputName, n=norm))
 			os.sys.exit()
 
 ## check out on the requested project
 if cmd == 'out':
 	# check that project name is given
-	if nArgs is 1:
+	if nArgs == 1:
 		# no project was given
 		printUsage('out')
 	else:
 		# project given, check that it exists
-		projectName = args[1]
-		if checkProjectExists(prefs, projectName):
+		inputName = args[1]
+
+		# match projectName to input
+		projectName = matchProjectName(prefs, inputName)
+
+		if projectName is not None:
+
 			# load the project
 			project = loadProject(prefs, projectName)
 
+			# parse the remaining argument list
+			rtime, rtag, notes, notice = parseOptArgs(args[2:], project, projectName, prefs)
+
 			# check that the project is active now
 			currentProject = activeProject(prefs)
-			if currentProject == projectName:
+
+			# clock out, if current project exists and is the one requested, or if specific tag requested
+			if (currentProject is not None and currentProject[0] == projectName) or rtag is not None:
 
 				# get the current time in the preferred format
-				t = makeTimestamp(prefs)
+				otime = makeTimestamp(prefs)
 
-				# check notes is a string
-				if nArgs is 3:
-					notes = args[2]
-				else:
-					notes = ''
-				if type(notes) is not str:
-					printUsage('out')
+				# update project timestamp
+				t = adjustTime(otime, rtime, prefs)
+
+				# check that a user-requested tag belongs to the requested project
+				if rtag is not None and rtag not in project.keys():
+					print('requested tag {b}{tg}{n} is not valid for project {b}{p}{n}'.format(b=bold, 
+						tg=rtag, n=norm, p=projectName))
 					os.sys.exit()
 
+				# make correct tag
+				tag = makeEventTag(t, rtag, prefs, clockout=True)
+
 				# clock out!
-				print('clocking out on project "' + projectName + '"at ' + t)
-				clockOut(prefs, projectName, project, t, notes)
+				print('clocking out on project {b}{p}{n} at {a}{f}'.format(b=bold, p=projectName, n=norm, a=notice, f=t))
+				clockOut(prefs, projectName, project, t, tag, notes)
 
 				# save project
 				saveProject(prefs, projectName, project)
 
 			else:
-				print('you are not currently clocked in on project "' + projectName +'"')
+				print('you are not currently clocked in on project {b}{p}{n}'.format(b=bold, p=projectName, n=norm))
 				os.sys.exit()
 		else:
-			print('project "' + projectName + '" does not exist')
+			print('project {b}{p}{n} does not exist'.format(b=bold, p=inputName, n=norm))
 			os.sys.exit()
+
+## remove the requested project
+if cmd == 'rm':
+	# check project name is given
+	if nArgs == 1:
+		# no project given
+		printUsage('rm')
+		os.sys.exit()
+	else:
+		# project name given
+		# first check for force argument
+		if '-f' in args:
+			force = True
+			inputName = args[2]
+			idx = 3
+		else:
+			force = False
+			inputName = args[1]
+			idx = 2
+
+		# match project name to input
+		projectName = matchProjectName(prefs, inputName)
+
+		if projectName is not None:
+
+			# load project
+			project = loadProject(prefs, projectName)
+
+			# parse the remaining argument list
+			rtime, rtag, notes, notice = parseOptArgs(args[idx:], project, projectName, prefs)
+
+			# check if we're deleting a project or a tag
+			if rtag is None:
+				# deleting entire project!
+				# verify that user really wants to delete the project
+				if not force:
+					really = input('really delete project {b}{p}{n}? all data will be lost. (y/[n]): '.format(b=bold, p=projectName, n=norm))
+					if really.lower() not in ['y', 'yes']:
+						print('project {b}{p}{n} not removed'.format(b=bold, p=projectName, n=norm))
+						os.sys.exit()
+
+				# user really wants to delete, load project
+				project = loadProject(prefs, projectName)
+
+				# remove actual data file
+				try:
+					os.remove(os.path.join(os.path.expanduser(prefs['tmandir']), 'projects', projectName + '.json'))
+				except:
+					print('could not remove project {b}{p}{n}'.format(b=bold, p=projectName, n=norm))
+					os.sys.exit()
+
+				# remove project from metadata file
+				md = readMetadata(prefs)
+				md['projects'].remove(projectName)
+				if md['active'] is not None and len(md['active']) > 1 and md['active'][0] == projectName:
+					md['active'] = None
+
+				# write metadata back
+				writeMetadata(prefs, md)
+
+				# notify
+				print('project {b}{p}{n} removed'.format(b=bold, p=projectName, n=norm))
+				os.sys.exit()
+
+			else:
+				# deleting tag
+				# verify user really wants to delete the tag
+				if not force:
+					really = input('really delete tag {b}{t}{n} for project {b}{p}{n}? all data will be lost. (y/[n]): '.format(
+						b=bold, p=projectName, n=norm, t=rtag))
+					if really.lower() not in ['y', 'yes']:
+						print('tag {b}{t}{n} for project {b}{p}{n} not removed'.format(b=bold, p=projectName, n=norm, t=rtag))
+						os.sys.exit()
+
+				# user really wants to delete tag, load project
+				project = loadProject(prefs, projectName)
+
+				# remove selected tag
+				removed = project.pop(rtag)
+
+				# save project file
+				saveProject(prefs, projectName, project)
+
+				# remove this tag from metadata, if it's the active tag
+				md = readMetadata(prefs)
+				if md['active'] is not None and md['active'][1] == rtag:
+					md['active'] = None
+
+				# write metadata back
+				writeMetadata(prefs, md)
+
+				# notify and exit
+				print('tag {b}{t}{n} for project {b}{p}{n} removed'.format(b=bold, p=projectName, n=norm, t=rtag))
+				os.sys.exit()
+
+		else:
+			print('project {b}{p}{n} does not exist'.format(b=bold, p=inputName, n=norm))
+			os.sys.exit()
+
+## show information about the current project
+if cmd == 'show':
+	# check that a project name is given
+	if nArgs == 1:
+		printUsage('show')
+		os.sys.exit()
+	else:
+		inputName = args[1]
+	
+	# match input name to project name
+	projectName = matchProjectName(prefs, inputName)
+
+	if projectName is not None:
+		# load project
+		project = loadProject(prefs, projectName)
+
+		# pretty print project
+		prettyPrintProject(project, projectName, width=30)
+		os.sys.exit()
+
+	else:
+		print('project {b}{p}{n} does not exist'.format(b=bold, p=inputName, n=norm))
+		os.sys.exit()
 
 ## list all projects
 if cmd == 'list':
-	projects = [f.replace('.json', '') for f in os.listdir(os.path.join(os.path.expanduser(prefs['tmandir']), 'projects'))]
-	print('your projects are:')
-	for pr in projects:
-		print(pr)
-
+	prs = os.listdir(os.path.join(os.path.expanduser(prefs['tmandir']), 'projects'))
+	if len(prs) == 0:
+		print('you have no projects!')
+	else:
+		# get metadata
+		md = readMetadata(prefs)
+		if md['active'] is not None:
+			activeProject = md['active'][0]
+		print('your projects are:')
+		for p in prs:
+			pr = p.replace('.json', '')
+			if pr == activeProject:
+				print(pr + ' < ')
+			else:
+				print(pr)
+			
