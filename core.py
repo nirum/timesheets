@@ -209,7 +209,7 @@ def matchProjectName(prefs, projectName):
 		# deal with matches
 		if len(matches) == 1:
 			# if only one match, just choose it, but notify the user
-			print('autocompleting project {b}{pi}{n} to {b}{pf}{n}\n'.format(b=bold, pi=projectName, pf=matches[0], n=norm))
+			print('autocompleting project {b}{pi}{n} to {b}{pf}{n}'.format(b=bold, pi=projectName, pf=matches[0], n=norm))
 			projectName = matches[0]
 		else:
 			# more than one match, let user pick
