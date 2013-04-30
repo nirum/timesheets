@@ -56,7 +56,9 @@ event with tag `0c22eefac1002b` to be 30 minutes prior to the current time.
 
 Since writing project names and long, arbitrary hex tags gets pretty tedious, you can also specify
 project names and tags by writing only the first few characters of either one. `tman` will auto-
-complete the name if it is uniquely specified, or ask you to pick one if it's not.
+complete the name if it is uniquely specified, or ask you to pick one if it's not. This will allow
+you to update your incorrect clock-out time by calling `tman out my-project --tag=0c2`. Remember
+that you can always see the list of clock events by calling `tman show my-project`.
 
 todo
 -----
