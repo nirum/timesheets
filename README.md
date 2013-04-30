@@ -25,7 +25,8 @@ tag for this particular clock-in event, and associates with it a timestamp. You 
 format of the timestamp strings in your tmanrc.
 
 When you're done working on `my-project` simply call `tman out my-project`, which associates 
-another timestamp with this event.
+another timestamp with this event. You can also clock out on project on which you are current
+clocked in by just calling `tman out`.
 
 You can also add short notes, something like git commit notes, to each clock in or out event, by
 calling `tman in my-project notes`. Notes should be a quoted string.

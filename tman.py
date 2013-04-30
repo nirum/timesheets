@@ -139,7 +139,29 @@ if cmd == 'out':
 	# check that project name is given
 	if nArgs == 1:
 		# no project was given
-		printUsage('out')
+		# see if there is a current project
+		md = readMetadata(prefs)
+		if md['active'] is not None:
+			# there is a currently active project, clock out on it
+			# get project name and current tag
+			projectName = md['active'][0]
+			tag = md['active'][1]
+
+			# load the project
+			project = loadProject(prefs, projectName)
+			
+			# make a timestamp
+			t = makeTimestamp(prefs)
+
+			# clock out
+			print('clocking out on project {b}{p}{n} at {f}'.format(b=bold, p=projectName, n=norm, 
+				f=t))
+			clockOut(prefs, projectName, project, t, tag, '')
+
+			# save project
+			saveProject(prefs, projectName, project)
+		else:
+			printUsage('out')
 	else:
 		# project given, check that it exists
 		inputName = args[1]
