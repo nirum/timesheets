@@ -13,7 +13,7 @@ NORMAL=`tput sgr0`
 echo -e "Welcome to ${BOLD}tman${NORMAL}, a simple time managment system\n"
 
 ## ask for location
-echo -e "Where would you like to put tman files?"
+echo "Where would you like to put tman files?"
 read -p "This includes source code and project JSON files. [~/.tman]: " TMANDIR
 if [ -z $TMANDIR ]; then
 	TMANDIR=~/.tman
@@ -35,16 +35,17 @@ cp -R ./.git* $TMANDIR/
 cp ./tmansetup.sh $TMANDIR/
 
 ## ask for timestamp format
-echo -e "\nHow would you like timestamps displayed?"
+echo ""
+echo "How would you like timestamps displayed?"
 read -p "This can be any of the standard representations recognized by 'strftime'. [%c]: " TIMEFMT
 if [ -z $TIMEFMT ]; then
 	TIMEFMT='%c'
 fi
 
 ## actually make tmanrc
-echo -e "[Core]" >> $HOME/.tmanrc
-echo -e "tmandir = $TMANDIR" >> $HOME/.tmanrc
-echo -e "timefmt = $TIMEFMT" >> $HOME/.tmanrc
+echo "[Core]" >> $HOME/.tmanrc
+echo "tmandir = $TMANDIR" >> $HOME/.tmanrc
+echo "timefmt = $TIMEFMT" >> $HOME/.tmanrc
 
 ## put something in /usr/local/bin?
 echo ""
@@ -53,16 +54,17 @@ if [ -z $DOLINK ]; then
 	DOLINK='y'
 fi
 if [ $DOLINK = 'y' ]; then
-	echo -e "Please enter your sudo password to symlink tman"
+	echo "Please enter your sudo password to symlink tman"
 	sudo ln -sf $TMANDIR/tman.py /usr/local/bin/tman
 	chmod u+x /usr/local/bin/tman
 else
-	echo -e "Adding an alias to tman for this session only."
-	echo -e "Please add an alias to your shell initilization files."
+	echo "Adding an alias to tman for this session only."
+	echo "Please add an alias to your shell initilization files."
 	alias tman=$TMANDIR/tman.py
 fi
 
 
 ## that's all for now
-echo -e "\nThat's it, you're all setup to use tman."
-echo -e "Type 'tman --help' or 'tman help <command>' to learn more about how to use tman."
+echo ""
+echo "That's it, you're all setup to use tman."
+echo "Type 'tman --help' or 'tman help <command>' to learn more about how to use tman."
