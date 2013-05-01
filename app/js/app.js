@@ -1,4 +1,9 @@
-var app = angular.module('tman', []);
+var app = angular.module('tman', []).
+    config(['$routeProvider', function($routeProvider) {
+    $routeProvider.
+    when('/:projectname', {templateUrl: 'project.html', controller: ProjectCtrl}).
+    otherwise({redirectTo: '/'});
+   }]);
 
 app.factory('Projects', function() {
    return [{
