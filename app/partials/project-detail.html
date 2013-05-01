@@ -1,0 +1,35 @@
+<div class="row">
+   <ul class="breadcrumb">
+      <li>
+         <a href="#/projects">Home</a>
+         <span class="divider">/</span>
+      </li>
+      <li class="active">{{name}}</li>
+   </ul>
+</div>
+<div class="row">
+   <div class="span12">
+      <!-- Body content -->
+      <h2>{{ name }}</h2>
+      <table class="table table-bordered table-striped">
+         <thead>
+            <tr>
+               <th>tag</th>
+               <th>time in</th>
+               <th>notes</th>
+               <th>time out</th>
+               <th>notes</th>
+            </tr>
+         </thead>
+         <tbody>
+            <tr ng-repeat="(key,val) in timestamps">
+               <td>{{key}}</td>
+               <td>{{val.in}}</td>
+               <td>{{val.innotes}}</td>
+               <td>{{val.out}}</td>
+               <td>{{val.outnotes}}</td>
+            </tr>
+         </tbody>
+      </table>
+   </div>
+</div>

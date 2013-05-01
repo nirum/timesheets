@@ -1,0 +1,26 @@
+<div class="row">
+   <ul class="breadcrumb">
+      <li class="active">Home</li>
+   </ul>
+</div>
+<div class="row">
+   <div class="span4">
+      <!-- Sidebar content -->
+      <h3 ng-show="!metadata.active">No active projects</h3>
+      <h3 ng-show="metadata.active">Currently active:
+         <a href="#/projects/{{metadata.active[0]}}">{{ metadata.active[0] }}</a>
+      </h3>
+      <p>Search:
+         <input ng-model="query">
+      </p>
+   </div>
+   <div class="span8">
+      <!-- Body content -->
+      <h2>You have {{ metadata.projects.length }} projects:</h2>
+      <ul class="nav nav-pills nav-stacked project-list">
+         <li ng-repeat="name in metadata.projects | filter:query">
+            <a href="#/projects/{{name}}">{{name}}</a>
+         </li>
+      </ul>
+   </div>
+</div>
