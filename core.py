@@ -33,7 +33,7 @@ def createNewProject(prefs, projectName):
 	"""create a new project with the given name"""
 	# create an empty project dict
 	project = {}
-	#project = {'in': [], 
+	#project = {'in': [],
 			   #'out': [],
 			   #'notes': []}
 
@@ -52,8 +52,9 @@ def makeTimestamp(prefs):
 	# generate an actual timestamp
 	timestamp = datetime.now()
 
-	# return the string-formatted timestamp 
-	return datetime.strftime(timestamp, prefs['timefmt'])
+	# return the string-formatted timestamp as ISO8601
+	return timestamp.isoformat()
+	#return datetime.strftime(timestamp, prefs['timefmt'])
 
 def getTimestamps(project):
 	return project['timestamps']
@@ -70,7 +71,7 @@ def adjustTime(t, rtime, prefs):
 		diffs = [float(li) for li in re.split('[-+dhm]', rtime) if len(li) > 0]
 
 		# insert zeros where missing indices
-		missIdx = [['d', 'h', 'm'].index(si) for si in 
+		missIdx = [['d', 'h', 'm'].index(si) for si in
 				[di for di in ['d', 'h', 'm'] if di not in rtime]]
 		for ii in missIdx:
 			diffs.insert(ii, 0.0)
@@ -126,7 +127,7 @@ def clockIn(prefs, projectName, project, t, tag, notes):
 	# update the project dictionary with the clock in time and its notes
 	project[tag]['in'] = t
 	project[tag]['innotes'] = notes
-	
+
 	# set the project as active
 	setActive(prefs, projectName, tag)
 
@@ -145,7 +146,7 @@ def activeProject(prefs):
 	# read metadata.json
 	md = readMetadata(prefs)
 
-	# check if project is active 
+	# check if project is active
 	return md['active']
 
 
@@ -159,7 +160,7 @@ def setActive(prefs, projectName, tag):
 
 	# write metadata
 	writeMetadata(prefs, md)
-	
+
 def setInactive(prefs):
 	"""set a project as inactive"""
 	# read current metadata
@@ -170,7 +171,7 @@ def setInactive(prefs):
 
 	# write metadata
 	writeMetadata(prefs, md)
-	
+
 ## save/load project
 def saveProject(prefs, projectName, project):
 	"""save a project to its file"""
@@ -196,7 +197,7 @@ def matchProjectName(prefs, projectName):
 	# direct match case
 	if projectName in md['projects']:
 		return projectName
-	
+
 	# guess which experiment they requested
 	mt = [re.match(projectName, pi) for pi in md['projects']]
 	if not any(mt):
@@ -205,7 +206,7 @@ def matchProjectName(prefs, projectName):
 	else:
 		# find matches
 		matches = [md['projects'][i] for i, x in enumerate([re.match(projectName, pi) for pi in md['projects']]) if x is not None]
-		
+
 		# deal with matches
 		if len(matches) == 1:
 			# if only one match, just choose it, but notify the user
@@ -227,7 +228,7 @@ def matchProjectName(prefs, projectName):
 
 	# return the actual projectName
 	return projectName
-			
+
 ## metadata stuff
 def readMetadata(prefs):
 	"""read the metadata.json file"""
@@ -246,7 +247,7 @@ def addProjectToMd(prefs, projectName):
 	"""add the project with the given name to the metadata file"""
 	# read current metadata
 	md = readMetadata(prefs)
-	
+
 	# add this project to the list
 	md['projects'].append(projectName)
 
@@ -261,19 +262,19 @@ def parseOptArgs(optargs, project, projectName, prefs):
 		rtime = '0'
 		rtag = None
 		notes = ''
-		notice = ''	
+		notice = ''
 		return rtime, rtag, notes, notice
 	else:
 		# some optional arguments specified, parse away!
 		# check for each possibility, and remove it from args as it is found
-		
+
 		# first check for a tag
 		hasTag = [re.match('--tag', ai) for ai in optargs]
 		if any(hasTag):
 			# user requested specific tag
 			# pop the full arg off optargs list
 			fullarg = optargs.pop([mi is None for mi in hasTag].index(False))
-			
+
 			# get requested tag, potentially a partial match
 			rtagpart = re.sub('--tag=', '', fullarg)
 
@@ -369,16 +370,16 @@ def prettyPrintProject(project, projectName, width=40):
 	# find the number of rows
 	#from math import ceil
 	#nrows = ceil(max(len(project[ti][ki]) for ti in project.keys() for ki in ['innotes', 'outnotes']) / width)
-	
+
 	# print the column headers
 	twidth = 16
 	tmwidth = 26
 	print(bold + 'tag'.ljust(twidth), 'time in'.ljust(tmwidth), 'in notes'.ljust(width), 'time out'.ljust(tmwidth), 'out notes' + norm.ljust(width))
-	
+
 	# print each tag
 	keys = [ki for ki in project.keys()]
 	for ki in project.keys():
-		print(ki.ljust(twidth), project[ki]['in'].ljust(tmwidth), project[ki]['innotes'].ljust(width), str(project[ki]['out']).ljust(tmwidth), 
+		print(ki.ljust(twidth), project[ki]['in'].ljust(tmwidth), project[ki]['innotes'].ljust(width), str(project[ki]['out']).ljust(tmwidth),
 				project[ki]['outnotes'].ljust(width))
 	   # # print tag and in timestamp, no new line
 		#print(ki.ljust(width), project[ki]['in'].ljust(width), end='')
@@ -386,13 +387,13 @@ def prettyPrintProject(project, projectName, width=40):
 		#for ri in range(nrows):
 			## print innotes
 			#print(project[ki]['innotes'][ri * width : min((ri + 1) * width, len(project[ki]['innotes']))].ljust(width), end='')
-			## print the out timestamp if on the first row 
+			## print the out timestamp if on the first row
 			#if ri == 0:
 				#print(project[ki]['out'].ljust(width), end='')
 
 			## print the out notes
 		  #  print(project[ki]['outnotes'][ri * width : min((ri + 1) * width, len(project[ki]['outnotes']))].ljust(width), end='')
-	
+
 	# print each tag
    # from math import ceil
 	#for ti in project.keys():
