@@ -2,7 +2,7 @@
 
 /* App Module */
 
-angular.module('tman', ['tmanServices']).
+angular.module('tman', ['tmanServices', 'tmanFilters']).
   config(['$routeProvider', function($routeProvider) {
   $routeProvider.
       when('/projects', {templateUrl: 'partials/project-list.html',   controller: ProjectListCtrl}).

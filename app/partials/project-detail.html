@@ -19,16 +19,20 @@
                <th>notes</th>
                <th>time out</th>
                <th>notes</th>
+               <th>length</th>
             </tr>
          </thead>
          <tbody>
 						 <!-- for times, we need to (1) store them as ISO8601 formats, and (2) not use 0 as a placeholder -->
             <tr ng-repeat="(key,val) in timestamps">
                <td>{{key}}</td>
-               <td>{{val.in | date:'h:mma on MM/dd/yyyy'}}</td>
-               <td>{{val.innotes}}</td>
-               <td>{{val.out | date:'h:mma on MM/dd/yyyy'}}</td>
-               <td>{{val.outnotes}}</td>
+							 <!--<td>{{val.in | date:'h:mma on MM/dd/yyyy'}}</td>-->
+							 <td>{{ val.in | timeAgo }}</td>
+               <td>{{ val.innotes }}</td>
+               <!--<td>{{val.out | date:'h:mma on MM/dd/yyyy'}}</td>-->
+							 <td>{{ val.out | timeAgo }}</td>
+               <td>{{ val.outnotes }}</td>
+               <td class="blue">{{ val | timeDiff }}</td>
             </tr>
          </tbody>
       </table>
