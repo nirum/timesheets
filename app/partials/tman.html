@@ -1,0 +1,27 @@
+<div class="row">
+   <ul class="breadcrumb">
+      <li>
+         <a href="#/">Home</a>
+         <span class="divider">/</span>
+      </li>
+      <li class="active">Tman</li>
+   </ul>
+</div>
+<div class="row">
+   <div class="span4">
+      <!-- sidebar content -->
+			<h2>list of projects:</h2>
+			<ul>
+					<li ng-repeat="project in projects">{{ project.project }}</li>
+			</ul>
+	</div>
+	<div class="span4">
+      <!--<div id="messagesDiv" auto-scroll="messages" style="height:500px; border: 2px solid gray;">-->
+         <!--<div ng-cloak ng-repeat="message in messages"><em>{{message.from}}:</em>{{message.content}}</div>-->
+      <!--</div>-->
+      <form ng-submit="addTime()">
+         <input type="text" ng-model="projectname" placeholder="enter a project name...">
+         <input type="submit" id="submit" value="Clock In" style="font-size:24px;">
+      </form>
+   </div>
+</div>

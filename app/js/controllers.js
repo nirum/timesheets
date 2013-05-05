@@ -13,6 +13,20 @@ function ProjectDetailCtrl($scope, $routeParams, Project) {
    })
 }
 
+function TmanCtrl($scope, $timeout, angularFireCollection) {
+   var url = 'https://tman.firebaseio.com/projects';
+   $scope.projects = angularFireCollection(url);
+   $scope.projectname = "";
+   $scope.addTime = function() {
+			var now = new Date().getTime();
+      $scope.projects.add({
+         project: $scope.projectname,
+         timestamp: now
+      });
+      $scope.projectname = "";
+   }
+}
+
 function ChatCtrl($scope, $timeout, angularFireCollection) {
    $scope.header = "Chat";
    var url = 'https://tman.firebaseio.com/chat';
